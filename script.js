@@ -13,7 +13,9 @@ function initSupabase() {
       supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
       console.log('✅ KisanSetu Supabase Client connected to:', SUPABASE_URL);
       subscribeToLiveQueueRealtime();
+      subscribeToBookingsRealtime();
       fetchSupabaseData();
+      fetchAndRenderProcurementCentres();
       checkActiveSessionOnLoad();
     } catch (err) {
       console.warn('Supabase initialization notice:', err);
@@ -38,7 +40,102 @@ async function checkActiveSessionOnLoad() {
   }
 }
 
-// Supabase Realtime Listener for Live Queue
+// Register a newly created Procurement Centre into Supabase Database
+async function registerProcurementCentreInSupabase(centreName, officerName) {
+  if (!supabaseClient || !centreName) return;
+  try {
+    const centreCode = 'PC-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    
+    // Insert/upsert into procurement_centres table
+    await supabaseClient.from('procurement_centres').upsert([{
+      centre_code: centreCode,
+      name: centreName,
+      district: 'Karnal',
+      state_name: 'Haryana',
+      address: `${centreName}, Main Mandi Complex`,
+      capacity_quintals_per_day: 2500,
+      active_counters: 3,
+      avg_processing_time_min: 4.8,
+      queue_status: 'Low'
+    }], { onConflict: 'name' });
+
+    // Insert/upsert into live_queue table
+    await supabaseClient.from('live_queue').upsert([{
+      centre_code: centreCode,
+      centre_name: centreName,
+      serving_token_num: 102,
+      serving_token_code: 'A102'
+    }], { onConflict: 'centre_code' });
+
+    // Refresh dynamic centre cards for farmers
+    fetchAndRenderProcurementCentres();
+  } catch (err) {
+    console.warn('Centre registration sync notice:', err);
+  }
+}
+
+// Fetch all registered Procurement Centres from Supabase and render for Farmers
+async function fetchAndRenderProcurementCentres() {
+  if (!supabaseClient) return;
+  try {
+    const { data: centres } = await supabaseClient
+      .from('procurement_centres')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (centres && centres.length > 0) {
+      renderCentreSelectionCards(centres);
+    }
+  } catch (e) {
+    console.warn('Procurement centres fetch notice:', e);
+  }
+}
+
+// Dynamically render Procurement Centre cards in Step 2 of Slot Booking
+function renderCentreSelectionCards(centres) {
+  const container = document.getElementById('centreSelectionList');
+  if (!container) return;
+
+  let html = '';
+  centres.forEach((c, idx) => {
+    const isSelected = state.bookingWizard.selectedCentre === c.name || (idx === 0 && !state.bookingWizard.selectedCentre);
+    const badgeText = idx === 0 ? 'Recommended • Available' : 'Active Centre';
+    const badgeClass = idx === 0 ? 'badge-success' : 'badge-info';
+    const distText = (3.5 + (idx * 2.2)).toFixed(1) + ' km';
+
+    if (isSelected && idx === 0 && !state.bookingWizard.selectedCentre) {
+      state.bookingWizard.selectedCentre = c.name;
+    }
+
+    html += `
+      <div class="centre-card ${isSelected ? 'selected' : ''}" onclick="selectCentre('${c.name}', ${idx})">
+        <div class="centre-card-header">
+          <div>
+            <h4>${c.name}</h4>
+            <span class="badge ${badgeClass}">${badgeText}</span>
+          </div>
+          <span class="dist-pill">${distText}</span>
+        </div>
+        <div class="centre-stats-row">
+          <div>District: <strong>${c.district || 'Karnal'}</strong></div>
+          <div>Est. Wait: <strong>${c.avg_processing_time_min || 4.8} min/token</strong></div>
+          <div>Counters: <strong>${c.active_counters || 3} Active</strong></div>
+          <div>Status: <span class="text-success font-bold">Open</span></div>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+
+  // Update smart recommendation banner title
+  const recCentreName = document.getElementById('recCentreName');
+  if (recCentreName && centres[0]) {
+    recCentreName.textContent = centres[0].name;
+  }
+}
+
+// Supabase Realtime Listener for Live Queue (Farmer Screen Sync)
 function subscribeToLiveQueueRealtime() {
   if (!supabaseClient) return;
   try {
@@ -52,11 +149,55 @@ function subscribeToLiveQueueRealtime() {
           showToast(`🔔 Realtime Update: Token A${payload.new.serving_token_num} is now being served!`);
         }
       })
-      .subscribe((status) => {
-        console.log('📡 Supabase Realtime Status:', status);
-      });
+      .subscribe();
   } catch (e) {
     console.warn('Realtime subscription notice:', e);
+  }
+}
+
+// Supabase Realtime Listener for New Farmer Bookings (Centre Officer Staff Portal Sync)
+function subscribeToBookingsRealtime() {
+  if (!supabaseClient) return;
+  try {
+    supabaseClient
+      .channel('public:bookings')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'bookings' }, (payload) => {
+        console.log('🌾 Realtime New Booking Payload Received:', payload);
+        if (payload.new) {
+          addBookingToStaffTable(payload.new);
+          showToast(`🌾 New Farmer Booking Received: Token ${payload.new.token_code} (${payload.new.crop_name})!`);
+        }
+      })
+      .subscribe();
+  } catch (e) {
+    console.warn('Bookings realtime subscription notice:', e);
+  }
+}
+
+// Append Realtime Farmer Booking to Centre Staff Portal Table
+function addBookingToStaffTable(b) {
+  const tbody = document.getElementById('staffBookingsTableBody');
+  if (!tbody) return;
+
+  const tr = document.createElement('tr');
+  tr.style.background = '#f0fdf4';
+  tr.style.transition = 'all 0.4s ease';
+  tr.innerHTML = `
+    <td><span class="badge badge-primary font-mono">${b.token_code || 'A108'}</span></td>
+    <td>${state.currentUser?.name || 'Farmer'}</td>
+    <td>${b.crop_name}</td>
+    <td>${b.quantity_quintals || b.raw_quantity} Quintals</td>
+    <td>${b.booking_date}</td>
+    <td>${b.time_slot}</td>
+    <td><span class="badge badge-success">Booked ✓</span></td>
+  `;
+
+  tbody.insertBefore(tr, tbody.firstChild);
+
+  // Update next token label in staff portal
+  const staffNextTok = document.getElementById('staffUserTok');
+  if (staffNextTok) {
+    staffNextTok.textContent = `${b.token_code} (${state.currentUser?.name || 'Farmer'})`;
   }
 }
 
@@ -74,11 +215,12 @@ async function fetchSupabaseData() {
   }
 }
 
-// Sync Booking to Supabase DB
+// Sync Booking to Supabase DB (Transmits Farmer Booking immediately to Centre)
 async function syncBookingToSupabase(bookingData) {
   if (!supabaseClient) return;
   try {
     await supabaseClient.from('bookings').insert([{
+      centre_name: bookingData.centre,
       crop_name: bookingData.crop,
       raw_quantity: bookingData.rawQuantity,
       unit: bookingData.unit,
@@ -162,6 +304,11 @@ async function handleSupabaseAuthSubmit(event, mode, role) {
         }
       });
 
+      // If Procurement Centre role, register centre into database
+      if (role === 'procurement_centre' && centreName) {
+        registerProcurementCentreInSupabase(centreName, fullName);
+      }
+
       if (error) {
         showToast(`Registration Notice: ${error.message}`);
         setupUserSessionFromSupabase({ email }, role, fullName, centreName);
@@ -172,6 +319,9 @@ async function handleSupabaseAuthSubmit(event, mode, role) {
       setupUserSessionFromSupabase(data.user || { email }, role, fullName, centreName);
     } catch (err) {
       console.error(err);
+      if (role === 'procurement_centre' && centreName) {
+        registerProcurementCentreInSupabase(centreName, fullName);
+      }
       setupUserSessionFromSupabase({ email }, role, fullName, centreName);
     }
   } else {
