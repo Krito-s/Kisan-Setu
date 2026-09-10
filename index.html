@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KisanSetu — Smarter Agricultural Procurement Platform</title>
+  <meta name="description" content="Digital Agricultural Procurement Management Platform for Farmers. Book time slots, track live queues, monitor procurement progress, and view transparent payment status.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="nav-brand" onclick="switchView('landing')">
+        <div class="logo-icon">
+          <svg width="34" height="34" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="10" fill="url(#logo-grad)"/>
+            <path d="M12 24C12 24 13.5 16 24 12C24 12 22.5 20 12 24Z" fill="#FEF08A"/>
+            <path d="M11 25C17 22 21 17 24 12" stroke="#166534" stroke-width="2.2" stroke-linecap="round"/>
+            <path d="M10 20C14 20 17 22 19 25" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="24" cy="12" r="2.5" fill="#FFFFFF"/>
+            <defs>
+              <linearGradient id="logo-grad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#0F766E"/>
+                <stop offset="1" stop-color="#166534"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="brand-name">KisanSetu <span class="badge-emblem" data-i18n="govBadge">Govt Portal</span></span>
+          <span class="brand-tagline" data-i18n="tagline">Smarter Procurement. Less Waiting.</span>
+        </div>
+      </div>
+
+      <!-- Navigation Links -->
+      <nav class="nav-menu" id="navMenu">
+        <button class="nav-link active" data-view="landing" onclick="switchView('landing')" data-i18n="navHome">Home</button>
+        <button class="nav-link" data-view="dashboard" onclick="switchView('dashboard')" data-i18n="navDashboard">Dashboard</button>
+        <button class="nav-link" data-view="booking" onclick="switchView('booking')" data-i18n="navBook">Book Slot</button>
+        <button class="nav-link" data-view="queue" onclick="switchView('queue')" data-i18n="navQueue">Live Queue</button>
+        <button class="nav-link" data-view="procurement" onclick="switchView('procurement')" data-i18n="navProcurement">Procurement</button>
+        <button class="nav-link" data-view="payments" onclick="switchView('payments')" data-i18n="navPayments">Payments</button>
+
+        <div class="nav-dropdown-group">
+          <button class="nav-link dropdown-toggle" id="portalDropdownBtn">
+            <span data-i18n="navMorePortals">More Portals</span> ▾
+          </button>
+          <div class="dropdown-menu" id="portalDropdown">
+            <a onclick="switchView('history')">📜 <span data-i18n="navHistory">Procurement History</span></a>
+            <a onclick="switchView('map')">🗺️ <span data-i18n="navMap">Centre Map</span></a>
+            <div class="dropdown-divider"></div>
+            <a onclick="switchView('staff')">🏢 <span data-i18n="navStaff">Centre Staff Portal</span></a>
+            <a onclick="switchView('admin')">📊 <span data-i18n="navAdmin">District Admin Portal</span></a>
+          </div>
+        </div>
+      </nav>
+
+      <!-- Right Action Controls -->
+      <div class="nav-actions">
+        <!-- Quick Role Switcher Button -->
+        <button class="role-switcher-btn" onclick="toggleLoginModal(true)" title="Switch Profile Tier (Farmer / Mandi Staff / Central Govt)">
+          <span class="role-badge-pill badge-farmer" id="navRoleBadge">Tier 1: Farmer</span>
+          <span class="role-switcher-text">⇄ Switch Profile</span>
+        </button>
+
+        <!-- Language Switcher -->
+        <div class="lang-selector">
+          <span class="lang-icon">🌐</span>
+          <select id="languageSelect" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="hi">हिंदी</option>
+            <option value="as">অসমীয়া</option>
+          </select>
+        </div>
+
+        <!-- Notification Icon -->
+        <button class="icon-btn" onclick="switchView('notifications')" title="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          <span class="notification-dot" id="notifBadge">3</span>
+        </button>
+
+        <!-- User Profile Pill & Dropdown -->
+        <div class="profile-dropdown-wrapper">
+          <button class="profile-pill" id="profilePillBtn">
+            <div class="avatar" id="navUserAvatar">RK</div>
+            <div class="profile-meta">
+              <span class="user-name" id="navUserName">Ramesh Kumar</span>
+              <span class="user-id" id="navUserId">KS-F10293</span>
+            </div>
+            <span class="pill-caret">▾</span>
+          </button>
+          
+          <div class="dropdown-menu profile-dropdown-menu" id="profileDropdown">
+            <div class="profile-dropdown-header">
+              <div class="avatar lg" id="ddUserAvatar">RK</div>
+              <div class="profile-dropdown-info">
+                <div class="user-name-title" id="ddUserName">Ramesh Kumar</div>
+                <div class="user-id-code" id="ddUserId">KS-F10293</div>
+                <span class="profile-role-tag" id="ddUserRole">🌾 Farmer Profile</span>
+              </div>
+            </div>
+            <div class="profile-details-list">
+              <div class="profile-detail-item"><span class="detail-label">Designation:</span> <span id="ddUserDesig">Registered Paddy Farmer</span></div>
+              <div class="profile-detail-item"><span class="detail-label">Location:</span> <span id="ddUserLoc">Karnal, Haryana</span></div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <div class="profile-tier-switch-title">Quick Profile Tier Switch:</div>
+            <div class="quick-tier-buttons">
+              <button class="tier-quick-btn farmer" onclick="loginAsRole('farmer')">🌾 Farmer</button>
+              <button class="tier-quick-btn staff" onclick="loginAsRole('procurement_centre')">🏢 Mandi Staff</button>
+              <button class="tier-quick-btn admin" onclick="loginAsRole('central_government')">🏛️ Central Govt</button>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item danger-item" onclick="logout()">
+              🚪 <span>Switch Profile / Log Out</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Live Status Bar -->
+  <div class="top-announcement">
+    <div class="container announcement-inner">
+      <span class="pulse-chip">LIVE</span>
+      <span class="announcement-text" id="liveTickerText">
+        Karnal Paddy Procurement 2026: XYZ Mandi Depot is operating at normal queue velocity. Average processing time: 7.4 mins.
+      </span>
+      <button class="ticker-btn" onclick="switchView('queue')" data-i18n="viewLiveToken">View Token A107 ➔</button>
+    </div>
+  </div>
+
+  <!-- MAIN APP VIEWS CONTAINER -->
+  <main class="main-content">
+
+    <!-- ================= 1. LANDING PAGE ================= -->
+    <section id="view-landing" class="view-section active">
+      <!-- Hero Section -->
+      <div class="hero-section">
+        <div class="container hero-grid">
+          <div class="hero-text">
+            <div class="trust-pill">
+              <span class="trust-icon">🏛️</span>
+              <span>Ministry of Agriculture & Farmers Welfare • Digital India</span>
+            </div>
+            <h1 class="hero-title" data-i18n="heroTitle">Procurement Made Simple for Every Farmer</h1>
+            <p class="hero-subtitle" data-i18n="heroSubtitle">
+              Book your procurement time slot online, track your Mandi queue status in real time, and monitor procurement payments directly with zero waiting stress.
+            </p>
+            <div class="hero-cta-group">
+              <button class="btn btn-primary btn-lg" onclick="switchView('booking')" data-i18n="btnBookSlot">
+                Book a Procurement Slot ➔
+              </button>
+              <button class="btn btn-secondary btn-lg" onclick="switchView('queue')" data-i18n="btnTrackProcurement">
+                Track My Procurement
+              </button>
+            </div>
+            <div class="trust-statement">
+              <span class="check-icon">✓</span>
+              <span data-i18n="trustStatement">Designed to reduce congestion, waiting time, and uncertainty at agricultural procurement centres.</span>
+            </div>
+          </div>
+          <div class="hero-media">
+            <div class="hero-image-wrapper">
+              <img src="hero_farmer.jpg" alt="Farmer using KisanSetu smartphone app in field" class="hero-img">
+              <div class="hero-floating-card top-left">
+                <div class="card-icon">⏱️</div>
+                <div>
+                  <div class="card-label">Average Wait Time</div>
+                  <div class="card-val">Reduced by 75%</div>
+                </div>
+              </div>
+              <div class="hero-floating-card bottom-right">
+                <div class="card-icon">🎟️</div>
+                <div>
+                  <div class="card-label">Live Token</div>
+                  <div class="card-val font-mono">A107 • 5 Ahead</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Key Benefits -->
+      <div class="benefits-section section-padding">
+        <div class="container">
+          <div class="section-header text-center">
+            <span class="subheading">Why KisanSetu?</span>
+            <h2>Solving Procurement Friction for Farmers</h2>
+          </div>
+          <div class="grid grid-4 gap-lg">
+            <div class="benefit-card">
+              <div class="benefit-icon bg-green-light">📅</div>
+              <h3>Easy Slot Booking</h3>
+              <p>Choose a convenient procurement date and time slot online instead of waiting in Mandi lines for hours.</p>
+            </div>
+            <div class="benefit-card">
+              <div class="benefit-icon bg-amber-light">📊</div>
+              <h3>Live Queue Tracking</h3>
+              <p>Know your precise token position in the queue and real-time estimated waiting time from your smartphone.</p>
+            </div>
+            <div class="benefit-card">
+              <div class="benefit-icon bg-blue-light">⚖️</div>
+              <h3>Procurement Tracking</h3>
+              <p>Track every stage transparently from gate arrival, moisture check, weighing, to final grade approval.</p>
+            </div>
+            <div class="benefit-card">
+              <div class="benefit-icon bg-purple-light">💳</div>
+              <h3>Payment Transparency</h3>
+              <p>See your total calculated produce amount and direct bank transfer (DBT) payment status in one dashboard.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How It Works (6 Steps) -->
+      <div class="how-it-works-section section-padding bg-surface">
+        <div class="container">
+          <div class="section-header text-center">
+            <span class="subheading">Simple Process</span>
+            <h2>How KisanSetu Works in 6 Steps</h2>
+          </div>
+          <div class="steps-grid">
+            <div class="step-card">
+              <div class="step-num">01</div>
+              <h4>Register</h4>
+              <p>Create your farmer profile using your Aadhaar/Kisan ID.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">02</div>
+              <h4>Choose Centre</h4>
+              <p>Find a nearby procurement centre with low waiting times.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">03</div>
+              <h4>Book Slot</h4>
+              <p>Select your crop, quantity, and preferred time window.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">04</div>
+              <h4>Track Queue</h4>
+              <p>Monitor your token and estimated arrival window live.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">05</div>
+              <h4>Complete Procurement</h4>
+              <p>Bring produce to the depot and complete fast verification.</p>
+            </div>
+            <div class="step-card">
+              <div class="step-num">06</div>
+              <h4>Track Payment</h4>
+              <p>Receive direct benefit transfer into your bank account.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Platform Statistics Section -->
+      <div class="stats-section section-padding bg-primary text-white">
+        <div class="container">
+          <div class="section-header text-center light">
+            <span class="subheading-light">Built for Farmers. Designed for Efficiency.</span>
+            <h2>Real-Time Platform Impact</h2>
+          </div>
+          <div class="grid grid-4 gap-lg text-center">
+            <div class="stat-box">
+              <div class="stat-number">12,482</div>
+              <div class="stat-label">Registered Farmers</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">48</div>
+              <div class="stat-label">Procurement Centres</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">1,284</div>
+              <div class="stat-label">Today's Bookings</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number">34 min</div>
+              <div class="stat-label">Average Waiting Time</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Landing Call To Action -->
+      <div class="cta-banner-section section-padding">
+        <div class="container text-center">
+          <div class="cta-card">
+            <h2>Ready to reduce your waiting time?</h2>
+            <p>Join thousands of farmers booking their procurement slots effortlessly.</p>
+            <button class="btn btn-primary btn-lg" onclick="switchView('booking')">Book Your Slot Now</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        <div class="container footer-grid">
+          <div class="footer-col brand-col">
+            <div class="logo-text">
+              <span class="brand-name text-white">KisanSetu</span>
+              <span class="brand-tagline">National Agricultural Procurement Portal</span>
+            </div>
+            <p>Empowering Indian farmers with predictable, transparent, and hassle-free MSP agricultural procurement.</p>
+          </div>
+          <div class="footer-col">
+            <h5>Quick Links</h5>
+            <ul>
+              <li><a onclick="switchView('dashboard')">Farmer Dashboard</a></li>
+              <li><a onclick="switchView('booking')">Book Procurement Slot</a></li>
+              <li><a onclick="switchView('queue')">Live Queue Status</a></li>
+              <li><a onclick="switchView('map')">Nearest Procurement Centres</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h5>Portals</h5>
+            <ul>
+              <li><a onclick="switchView('staff')">Centre Staff Dashboard</a></li>
+              <li><a onclick="switchView('admin')">District Admin Analytics</a></li>
+              <li><a onclick="switchView('payments')">Payment Status Tracker</a></li>
+            </ul>
+          </div>
+          <div class="footer-col">
+            <h5>Official Support</h5>
+            <p>Toll Free Helpline: <strong>1800-180-1551</strong></p>
+            <p>Email: support@kisansetu.gov.in</p>
+            <div class="gov-badge-box">
+              <span>🇮🇳 Department of Agriculture & Farmers Welfare</span>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom text-center">
+          <p>© 2026 KisanSetu Platform. Government of India Prototype. All rights reserved.</p>
+        </div>
+      </footer>
+    </section>
+
+    <!-- ================= 2. FARMER DASHBOARD ================= -->
+    <section id="view-dashboard" class="view-section">
+      <div class="container section-padding-sm">
+        <!-- Greeting Header -->
+        <div class="dashboard-header-card">
+          <div class="greeting-group">
+            <h2>Good Morning, Ramesh 👋</h2>
+            <div class="profile-meta-tags">
+              <span class="tag">Farmer ID: <strong>KS-F10293</strong></span>
+              <span class="tag">Village: <strong>Rampur</strong></span>
+              <span class="tag">District: <strong>Karnal, Haryana</strong></span>
+              <span class="tag tag-success">Aadhaar Verified ✓</span>
+            </div>
+          </div>
+          <div class="header-action-btn">
+            <button class="btn btn-primary" onclick="switchView('booking')">+ Book New Slot</button>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- Main Upcoming Booking Card -->
+          <div class="dash-main-col">
+            <div class="card booking-highlight-card">
+              <div class="card-header-flex">
+                <div>
+                  <span class="badge badge-warning">Upcoming Procurement</span>
+                  <h3>Paddy (Grade A)</h3>
+                </div>
+                <div class="token-badge-lg">
+                  <span class="token-title">Token Number</span>
+                  <span class="token-code" id="dashTokenCode">A107</span>
+                </div>
+              </div>
+
+              <div class="booking-specs-grid">
+                <div class="spec-item">
+                  <span class="spec-label">Quantity</span>
+                  <span class="spec-val" id="dashQuantity">32 Quintals</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Procurement Centre</span>
+                  <span class="spec-val">XYZ Procurement Centre</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Date & Time</span>
+                  <span class="spec-val">10 Sept 2026, 10:30 AM</span>
+                </div>
+                <div class="spec-item">
+                  <span class="spec-label">Arrival Window</span>
+                  <span class="spec-val">10:15 AM – 10:45 AM</span>
+                </div>
+              </div>
+
+              <!-- Queue Live Status Box -->
+              <div class="queue-status-banner">
+                <div class="queue-info">
+                  <span class="pulse-indicator"></span>
+                  <div>
+                    <h4 id="dashAheadText">5 farmers ahead of you</h4>
+                    <p>Estimated waiting time: <strong id="dashWaitText">24 minutes</strong></p>
+                  </div>
+                </div>
+                <div class="serving-pill">
+                  Currently Serving: <strong id="dashServingCode">A102</strong>
+                </div>
+              </div>
+
+              <!-- Dashboard QR Toggle -->
+              <div class="dash-qr-panel" id="dashQrPanel">
+                <button class="dash-qr-toggle" id="dashQrToggleBtn" onclick="toggleDashQr()">
+                  <span class="qr-toggle-icon">▼</span>
+                  <span>Show Entry QR Code</span>
+                </button>
+                <div class="dash-qr-content" id="dashQrContent" style="display:none;">
+                  <div id="dashQrCode" class="dash-qr-canvas"></div>
+                  <div class="dash-qr-hint">Scan at Mandi entrance gate</div>
+                  <button class="btn btn-sm btn-outline mt-sm" id="dashQrDownloadBtn" onclick="downloadDashQr()">⬇ Save QR</button>
+                </div>
+              </div>
+
+              <div class="card-actions-row">
+                <button class="btn btn-primary" onclick="switchView('queue')">View Live Queue</button>
+                <button class="btn btn-outline" onclick="switchView('procurement')">View Booking Details</button>
+                <button class="btn btn-ghost" onclick="openRescheduleModal()">Reschedule</button>
+                <button class="btn btn-ghost text-danger" onclick="cancelBooking()">Cancel Slot</button>
+              </div>
+            </div>
+
+            <!-- Quick Action Cards Grid -->
+            <div class="quick-actions-title">Quick Actions</div>
+            <div class="grid grid-4 gap-md">
+              <div class="quick-card" onclick="switchView('booking')">
+                <div class="quick-icon">📅</div>
+                <h4>Book New Slot</h4>
+                <p>Reserve slot for Paddy/Wheat</p>
+              </div>
+              <div class="quick-card" onclick="switchView('map')">
+                <div class="quick-icon">📍</div>
+                <h4>Find Centre</h4>
+                <p>Locate low queue Mandis</p>
+              </div>
+              <div class="quick-card" onclick="switchView('procurement')">
+                <div class="quick-icon">⚖️</div>
+                <h4>Track Procurement</h4>
+                <p>Monitor quality & weight</p>
+              </div>
+              <div class="quick-card" onclick="switchView('payments')">
+                <div class="quick-icon">💰</div>
+                <h4>Track Payment</h4>
+                <p>View DBT payout status</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sidebar: Notifications Panel -->
+          <div class="dash-side-col">
+            <div class="card notif-side-card">
+              <div class="card-header-flex">
+                <h3>Recent Notifications</h3>
+                <button class="btn-link" onclick="switchView('notifications')">View All</button>
+              </div>
+              <div class="notif-list-sm" id="dashNotifList">
+                <div class="notif-item unread">
+                  <div class="notif-type-icon bg-green-light">✓</div>
+                  <div class="notif-content">
+                    <p class="notif-text">Your paddy procurement slot at XYZ Centre is confirmed.</p>
+                    <span class="notif-time">10 mins ago</span>
+                  </div>
+                </div>
+                <div class="notif-item unread">
+                  <div class="notif-type-icon bg-amber-light">🔔</div>
+                  <div class="notif-content">
+                    <p class="notif-text">Live Queue Update: You are 5 positions away from your turn.</p>
+                    <span class="notif-time">2 mins ago</span>
+                  </div>
+                </div>
+                <div class="notif-item">
+                  <div class="notif-type-icon bg-blue-light">⚖️</div>
+                  <div class="notif-content">
+                    <p class="notif-text">Quality moisture test for Previous Batch #KS89 passed Grade A.</p>
+                    <span class="notif-time">Yesterday</span>
+                  </div>
+                </div>
+                <div class="notif-item">
+                  <div class="notif-type-icon bg-purple-light">💳</div>
+                  <div class="notif-content">
+                    <p class="notif-text">Payment of ₹37,200 credited to SBI A/c ending 4921.</p>
+                    <span class="notif-time">21 Aug 2026</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 3. SLOT BOOKING PAGE ================= -->
+    <section id="view-booking" class="view-section">
+      <div class="container section-padding-sm max-w-4xl">
+        <div class="view-title-box text-center">
+          <h2>Book Procurement Time Slot</h2>
+          <p>Select your crop details, nearby procurement centre, date, and preferred time window.</p>
+        </div>
+
+        <!-- Booking Wizard Stepper -->
+        <div class="wizard-stepper">
+          <div class="step-indicator active" id="stepInd1">
+            <div class="step-circle">1</div>
+            <span class="step-title">Select Crop</span>
+          </div>
+          <div class="step-line" id="line1"></div>
+          <div class="step-indicator" id="stepInd2">
+            <div class="step-circle">2</div>
+            <span class="step-title">Choose Centre</span>
+          </div>
+          <div class="step-line" id="line2"></div>
+          <div class="step-indicator" id="stepInd3">
+            <div class="step-circle">3</div>
+            <span class="step-title">Select Date</span>
+          </div>
+          <div class="step-line" id="line3"></div>
+          <div class="step-indicator" id="stepInd4">
+            <div class="step-circle">4</div>
+            <span class="step-title">Select Slot</span>
+          </div>
+          <div class="step-line" id="line4"></div>
+          <div class="step-indicator" id="stepInd5">
+            <div class="step-circle">5</div>
+            <span class="step-title">Confirm</span>
+          </div>
+        </div>
+
+        <!-- Wizard Step Containers -->
+        <div class="card wizard-card">
+
+          <!-- STEP 1: Select Crop -->
+          <div class="wizard-step-content active" id="wizardStep1">
+            <h3>Step 1: Select Crop & Estimated Quantity</h3>
+            <p class="text-muted">Choose the crop you plan to bring to the procurement depot.</p>
+
+            <div class="crop-grid grid grid-4 gap-md mt-lg">
+              <label class="crop-radio-card active">
+                <input type="radio" name="cropSelect" value="Paddy" checked onchange="updateCropSelection('Paddy')">
+                <div class="crop-icon">🌾</div>
+                <div class="crop-name">Paddy (धान)</div>
+                <div class="crop-msp">MSP: ₹2,300/Q</div>
+              </label>
+              <label class="crop-radio-card">
+                <input type="radio" name="cropSelect" value="Wheat" onchange="updateCropSelection('Wheat')">
+                <div class="crop-icon">🌾</div>
+                <div class="crop-name">Wheat (गेहूँ)</div>
+                <div class="crop-msp">MSP: ₹2,275/Q</div>
+              </label>
+              <label class="crop-radio-card">
+                <input type="radio" name="cropSelect" value="Maize" onchange="updateCropSelection('Maize')">
+                <div class="crop-icon">🌽</div>
+                <div class="crop-name">Maize (मक्का)</div>
+                <div class="crop-msp">MSP: ₹2,090/Q</div>
+              </label>
+              <label class="crop-radio-card">
+                <input type="radio" name="cropSelect" value="Other" onchange="updateCropSelection('Other')">
+                <div class="crop-icon">🌱</div>
+                <div class="crop-name">Other Pulses</div>
+                <div class="crop-msp">MSP Variable</div>
+              </label>
+            </div>
+
+            <div class="form-group mt-lg unit-selection-section">
+              <div class="unit-header flex flex-between items-center mb-xs flex-wrap gap-xs">
+                <label for="quantityInput" class="font-semibold text-slate-800">Estimated Quantity & Preferred Unit</label>
+                <div class="unit-pills-container flex gap-xs" id="unitPillGroup">
+                  <button type="button" class="unit-pill active" data-unit="quintal" onclick="selectQuantityUnit('quintal', true)">Quintal (Q)</button>
+                  <button type="button" class="unit-pill" data-unit="kg" onclick="selectQuantityUnit('kg', true)">Kilogram (kg)</button>
+                  <button type="button" class="unit-pill" data-unit="tonne" onclick="selectQuantityUnit('tonne', true)">Tonne (MT)</button>
+                  <button type="button" class="unit-pill" data-unit="bag" onclick="selectQuantityUnit('bag', true)">Bag (50kg)</button>
+                </div>
+              </div>
+
+              <div class="input-with-unit-wrapper max-w-md">
+                <div class="input-with-unit">
+                  <input type="number" id="quantityInput" class="form-control" value="32" min="1" max="500" step="any" oninput="handleQuantityChange()">
+                  <select id="unitSelect" class="unit-select-dropdown" onchange="selectQuantityUnit(this.value, true)">
+                    <option value="quintal" selected>Quintals (Q / क्विंटल)</option>
+                    <option value="kg">Kilograms (kg / किग्रा)</option>
+                    <option value="tonne">Metric Tonnes (MT / टन)</option>
+                    <option value="bag">Gunny Bags (Bags / बोरी 50kg)</option>
+                  </select>
+                </div>
+                <small class="text-muted block mt-xs" id="unitHelpText">1 Quintal = 100 Kilograms. Max allowed per booking: 500 Quintals.</small>
+              </div>
+
+              <!-- Real-time Unit Conversion & Rate Breakdown Box -->
+              <div class="unit-conversion-card mt-md" id="unitConversionCard">
+                <div class="unit-card-header flex flex-between items-center">
+                  <div class="flex items-center gap-xs">
+                    <span class="unit-card-icon">⚖️</span>
+                    <strong class="unit-card-title">Live Weight & Valuation Breakdown</strong>
+                  </div>
+                  <span class="badge badge-success" id="unitRateBadge">MSP: ₹2,300 / Quintal</span>
+                </div>
+                <div class="unit-conversions-grid grid grid-3 gap-sm mt-sm">
+                  <div class="unit-stat-item">
+                    <span class="stat-lbl">Standard Quintals</span>
+                    <strong class="stat-val text-primary" id="convQuintals">32.0 Q</strong>
+                  </div>
+                  <div class="unit-stat-item">
+                    <span class="stat-lbl">Kilograms / Tonnes</span>
+                    <strong class="stat-val" id="convKgTonnes">3,200 kg (3.2 MT)</strong>
+                  </div>
+                  <div class="unit-stat-item">
+                    <span class="stat-lbl">50kg Gunny Bags</span>
+                    <strong class="stat-val" id="convBags">64 Bags</strong>
+                  </div>
+                </div>
+                <div class="unit-est-payout mt-sm flex flex-between items-center pt-xs">
+                  <span class="text-sm font-medium text-muted">Est. Total MSP Value:</span>
+                  <span class="text-lg font-bold text-success" id="unitEstPayout">₹73,600</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="wizard-footer">
+              <span></span>
+              <button class="btn btn-primary" onclick="goToWizardStep(2)">Next: Select Centre ➔</button>
+            </div>
+          </div>
+
+          <!-- STEP 2: Select Procurement Centre + SMART RECOMMENDATION -->
+          <div class="wizard-step-content" id="wizardStep2">
+            <h3>Step 2: Select Procurement Centre</h3>
+            <p class="text-muted">Choose your nearest Mandi depot. Our system highlights centres with shortest waiting times.</p>
+
+            <!-- SMART RECOMMENDATION FEATURE -->
+            <div class="smart-recommendation-banner">
+              <div class="rec-badge">✨ SMART RECOMMENDATION</div>
+              <div class="rec-body">
+                <div>
+                  <h4 id="recCentreName">XYZ Procurement Centre</h4>
+                  <p>Based on current queue depth (18 farmers), distance (4.2 km), and active counters (3): <strong>Shortest estimated wait time (28 mins)</strong>.</p>
+                </div>
+                <button class="btn btn-secondary btn-sm" onclick="selectCentre('XYZ Procurement Centre', 0)">Choose Recommended Centre</button>
+              </div>
+            </div>
+
+            <div class="centre-list grid gap-md mt-lg" id="centreSelectionList">
+              <!-- Centre Cards -->
+              <div class="centre-card selected" onclick="selectCentre('XYZ Procurement Centre', 0)">
+                <div class="centre-card-header">
+                  <div>
+                    <h4>XYZ Procurement Centre (Central Depot)</h4>
+                    <span class="badge badge-success">Recommended • Shortest Wait</span>
+                  </div>
+                  <span class="dist-pill">4.2 km</span>
+                </div>
+                <div class="centre-stats-row">
+                  <div>Queue: <strong>18 farmers</strong></div>
+                  <div>Est. Wait: <strong>28 min</strong></div>
+                  <div>Capacity: <strong>62%</strong></div>
+                  <div>Status: <span class="text-success font-bold">Available</span></div>
+                </div>
+              </div>
+
+              <div class="centre-card" onclick="selectCentre('ABC Procurement Centre', 1)">
+                <div class="centre-card-header">
+                  <div>
+                    <h4>ABC Procurement Centre (East Sub-depot)</h4>
+                    <span class="badge badge-warning">High Demand</span>
+                  </div>
+                  <span class="dist-pill">7.1 km</span>
+                </div>
+                <div class="centre-stats-row">
+                  <div>Queue: <strong>43 farmers</strong></div>
+                  <div>Est. Wait: <strong>1 hr 25 min</strong></div>
+                  <div>Capacity: <strong>87%</strong></div>
+                  <div>Status: <span class="text-warning font-bold">Busy</span></div>
+                </div>
+              </div>
+
+              <div class="centre-card" onclick="selectCentre('Karnal Grain Market Yard #3', 2)">
+                <div class="centre-card-header">
+                  <div>
+                    <h4>Karnal Grain Market Yard #3</h4>
+                    <span class="badge badge-info">Normal Queue</span>
+                  </div>
+                  <span class="dist-pill">9.8 km</span>
+                </div>
+                <div class="centre-stats-row">
+                  <div>Queue: <strong>22 farmers</strong></div>
+                  <div>Est. Wait: <strong>35 min</strong></div>
+                  <div>Capacity: <strong>55%</strong></div>
+                  <div>Status: <span class="text-success font-bold">Available</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="wizard-footer">
+              <button class="btn btn-outline" onclick="goToWizardStep(1)">← Back</button>
+              <button class="btn btn-primary" onclick="goToWizardStep(3)">Next: Select Date ➔</button>
+            </div>
+          </div>
+
+          <!-- STEP 3: Select Date -->
+          <div class="wizard-step-content" id="wizardStep3">
+            <h3>Step 3: Select Procurement Date</h3>
+            <p class="text-muted">Choose your preferred arrival date. Dates with green dots have high slot availability.</p>
+
+            <div class="calendar-ui-wrapper mt-lg">
+              <div class="calendar-header">
+                <button class="cal-nav-btn" onclick="navigateCalendarMonth(-1)">&lt;</button>
+                <h4 id="calMonthYear">September 2026</h4>
+                <button class="cal-nav-btn" onclick="navigateCalendarMonth(1)">&gt;</button>
+              </div>
+              <div class="calendar-grid" id="calendarGrid">
+                <div class="cal-day-label">Sun</div>
+                <div class="cal-day-label">Mon</div>
+                <div class="cal-day-label">Tue</div>
+                <div class="cal-day-label">Wed</div>
+                <div class="cal-day-label">Thu</div>
+                <div class="cal-day-label">Fri</div>
+                <div class="cal-day-label">Sat</div>
+
+                <!-- Calendar days -->
+                <div class="cal-day disabled">7</div>
+                <div class="cal-day disabled">8</div>
+                <div class="cal-day disabled">9</div>
+                <div class="cal-day selected" onclick="selectDate('10 September 2026', this)">
+                  <span>10</span>
+                  <span class="cal-dot green"></span>
+                </div>
+                <div class="cal-day" onclick="selectDate('11 September 2026', this)">
+                  <span>11</span>
+                  <span class="cal-dot green"></span>
+                </div>
+                <div class="cal-day" onclick="selectDate('12 September 2026', this)">
+                  <span>12</span>
+                  <span class="cal-dot green"></span>
+                </div>
+                <div class="cal-day" onclick="selectDate('13 September 2026', this)">
+                  <span>13</span>
+                  <span class="cal-dot amber"></span>
+                </div>
+                <div class="cal-day" onclick="selectDate('14 September 2026', this)">
+                  <span>14</span>
+                  <span class="cal-dot green"></span>
+                </div>
+                <div class="cal-day" onclick="selectDate('15 September 2026', this)">
+                  <span>15</span>
+                  <span class="cal-dot green"></span>
+                </div>
+                <div class="cal-day" onclick="selectDate('16 September 2026', this)">
+                  <span>16</span>
+                  <span class="cal-dot amber"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="selected-date-banner mt-md">
+              Selected Date: <strong id="selectedDateDisplay">10 September 2026</strong>
+            </div>
+
+            <div class="wizard-footer">
+              <button class="btn btn-outline" onclick="goToWizardStep(2)">← Back</button>
+              <button class="btn btn-primary" onclick="goToWizardStep(4)">Next: Select Time Slot ➔</button>
+            </div>
+          </div>
+
+          <!-- STEP 4: Select Time Slot -->
+          <div class="wizard-step-content" id="wizardStep4">
+            <h3>Step 4: Select Time Window Slot</h3>
+            <p class="text-muted">Choose your 1-hour arrival window for <strong id="step4SelectedDate">10 September 2026</strong>.</p>
+
+            <div class="slots-grid grid grid-2 gap-md mt-lg" id="slotsGrid">
+              <div class="slot-card disabled">
+                <div class="slot-time">09:00 AM – 10:00 AM</div>
+                <span class="badge badge-danger">FULL</span>
+              </div>
+              <div class="slot-card selected" onclick="selectSlot('10:00 AM – 11:00 AM', '10:30 AM')">
+                <div class="slot-time">10:00 AM – 11:00 AM</div>
+                <span class="badge badge-success">6 slots available</span>
+              </div>
+              <div class="slot-card" onclick="selectSlot('11:00 AM – 12:00 PM', '11:30 AM')">
+                <div class="slot-time">11:00 AM – 12:00 PM</div>
+                <span class="badge badge-success">12 slots available</span>
+              </div>
+              <div class="slot-card" onclick="selectSlot('12:00 PM – 01:00 PM', '12:30 PM')">
+                <div class="slot-time">12:00 PM – 01:00 PM</div>
+                <span class="badge badge-success">8 slots available</span>
+              </div>
+              <div class="slot-card" onclick="selectSlot('02:00 PM – 03:00 PM', '02:30 PM')">
+                <div class="slot-time">02:00 PM – 03:00 PM</div>
+                <span class="badge badge-success">15 slots available</span>
+              </div>
+              <div class="slot-card" onclick="selectSlot('03:00 PM – 04:00 PM', '03:30 PM')">
+                <div class="slot-time">03:00 PM – 04:00 PM</div>
+                <span class="badge badge-success">10 slots available</span>
+              </div>
+            </div>
+
+            <div class="wizard-footer">
+              <button class="btn btn-outline" onclick="goToWizardStep(3)">← Back</button>
+              <button class="btn btn-primary" onclick="goToWizardStep(5)">Next: Review Summary ➔</button>
+            </div>
+          </div>
+
+          <!-- STEP 5: Booking Review & Confirmation -->
+          <div class="wizard-step-content" id="wizardStep5">
+            <h3>Step 5: Review & Confirm Booking</h3>
+            <p class="text-muted">Please double check your procurement slot reservation details.</p>
+
+            <div class="summary-box mt-lg">
+              <div class="summary-row">
+                <span>Farmer Name:</span>
+                <strong>Ramesh Kumar (KS-F10293)</strong>
+              </div>
+              <div class="summary-row">
+                <span>Selected Crop:</span>
+                <strong id="sumCrop">Paddy (धान)</strong>
+              </div>
+              <div class="summary-row">
+                <span>Estimated Quantity:</span>
+                <strong id="sumQuantity">32 Quintals</strong>
+              </div>
+              <div class="summary-row">
+                <span>Procurement Depot:</span>
+                <strong id="sumCentre">XYZ Procurement Centre</strong>
+              </div>
+              <div class="summary-row">
+                <span>Procurement Date:</span>
+                <strong id="sumDate">10 September 2026</strong>
+              </div>
+              <div class="summary-row">
+                <span>Time Slot Window:</span>
+                <strong id="sumSlot">10:00 AM – 11:00 AM</strong>
+              </div>
+              <div class="summary-row highlight">
+                <span>Estimated MSP Value:</span>
+                <strong id="sumMsp">₹73,600 (₹2,300 / Q)</strong>
+              </div>
+            </div>
+
+            <div class="wizard-footer">
+              <button class="btn btn-outline" onclick="goToWizardStep(4)">← Back</button>
+              <button class="btn btn-primary btn-lg" onclick="confirmFinalBooking()">Confirm & Generate Token ✓</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 4. BOOKING CONFIRMATION PAGE ================= -->
+    <section id="view-confirmation" class="view-section">
+      <div class="container section-padding-sm max-w-2xl text-center">
+        <div class="card confirmation-card">
+          <div class="conf-icon">✓</div>
+          <h2 class="text-success">Booking Confirmed!</h2>
+          <p class="text-muted">Your digital procurement token has been generated successfully.</p>
+
+          <div class="token-display-box">
+            <span class="tok-label">YOUR DIGITAL TOKEN</span>
+            <span class="tok-value" id="confTokenCode">A107</span>
+          </div>
+
+          <!-- Live QR Code for Booking Token -->
+          <div class="qr-card">
+            <div class="qr-card-header">
+              <span class="qr-card-icon">📱</span>
+              <div>
+                <div class="qr-card-title">Digital Entry QR Code</div>
+                <div class="qr-card-subtitle">Show this at the Mandi entrance gate</div>
+              </div>
+            </div>
+            <div class="qr-canvas-wrapper">
+              <div id="confQrCode" class="qr-canvas-inner"></div>
+            </div>
+            <div class="qr-actions-row">
+              <button class="btn btn-sm btn-outline" id="confQrDownloadBtn" onclick="downloadConfQr()" title="Download QR as PNG">
+                ⬇ Download QR
+              </button>
+              <button class="btn btn-sm btn-ghost" onclick="copyTokenToClipboard()" title="Copy token ID">
+                📋 Copy Token
+              </button>
+            </div>
+            <div class="qr-validity-badge">✅ Valid for booked slot only — Non-transferable</div>
+          </div>
+
+          <div class="conf-details-list">
+            <div>Crop & Declared Weight: <strong id="confQuantity">Paddy (32 Quintals)</strong></div>
+            <div>Procurement Centre: <strong id="confCentre">XYZ Procurement Centre</strong></div>
+            <div>Date & Time: <strong id="confDateTime">10 September 2026, 10:30 AM</strong></div>
+            <div>Estimated Arrival Window: <strong id="confWindow">10:15 AM – 10:45 AM</strong></div>
+          </div>
+
+          <div class="action-btn-row">
+            <button class="btn btn-primary" onclick="switchView('queue')">View Live Queue</button>
+            <button class="btn btn-outline" onclick="downloadReceipt()">Download Token Receipt</button>
+            <button class="btn btn-ghost" onclick="switchView('dashboard')">Go to Dashboard</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 5. LIVE QUEUE PAGE ================= -->
+    <section id="view-queue" class="view-section">
+      <div class="container section-padding-sm max-w-4xl">
+        <div class="card live-queue-header-card">
+          <div class="q-header-top">
+            <div>
+              <span class="badge badge-success pulse-badge">● LIVE MANDI QUEUE</span>
+              <h2 id="queueDepotTitle">Live Queue — XYZ Procurement Centre</h2>
+              <p class="text-muted">Active Counter Status: 3 Operating | Average Processing Time: 7.4 min/farmer</p>
+            </div>
+            <div class="live-ticker-box">
+              <span class="sync-icon spin">🔄</span>
+              <span id="queueLastUpdated">Queue updates automatically (2s ago)</span>
+            </div>
+          </div>
+
+          <div class="queue-metric-banner">
+            <div class="q-metric-item">
+              <div class="q-metric-label">CURRENTLY SERVING</div>
+              <div class="q-metric-val font-mono highlight-green" id="qCurrentlyServing">A102</div>
+            </div>
+            <div class="q-metric-divider"></div>
+            <div class="q-metric-item">
+              <div class="q-metric-label">YOUR TOKEN</div>
+              <div class="q-metric-val font-mono" id="qYourToken">A107</div>
+            </div>
+            <div class="q-metric-divider"></div>
+            <div class="q-metric-item">
+              <div class="q-metric-label">FARMERS AHEAD</div>
+              <div class="q-metric-val" id="qFarmersAhead">5</div>
+            </div>
+            <div class="q-metric-divider"></div>
+            <div class="q-metric-item">
+              <div class="q-metric-label">ESTIMATED WAIT</div>
+              <div class="q-metric-val text-amber" id="qEstWait">24 min</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vertical Queue Visualization -->
+        <div class="card mt-lg">
+          <div class="card-header-flex">
+            <h3>Current Token Sequence</h3>
+            <span class="text-muted font-sm">Tokens are called sequentially per counter</span>
+          </div>
+
+          <div class="vertical-queue-sequence" id="queueSequenceList">
+            <div class="queue-row serving">
+              <div class="tok-bubble">A102</div>
+              <div class="tok-status">
+                <strong>Currently Serving (Counter #2)</strong>
+                <span>Gate Entry & Moisture Verification</span>
+              </div>
+              <span class="badge badge-success">SERVING ✓</span>
+            </div>
+            <div class="queue-row completed">
+              <div class="tok-bubble">A103</div>
+              <div class="tok-status">
+                <strong>Token A103</strong>
+                <span>Produce Weighing Complete</span>
+              </div>
+              <span class="badge badge-secondary">COMPLETED</span>
+            </div>
+            <div class="queue-row completed">
+              <div class="tok-bubble">A104</div>
+              <div class="tok-status">
+                <strong>Token A104</strong>
+                <span>Quality Approval Complete</span>
+              </div>
+              <span class="badge badge-secondary">COMPLETED</span>
+            </div>
+            <div class="queue-row waiting">
+              <div class="tok-bubble">A105</div>
+              <div class="tok-status">
+                <strong>Token A105</strong>
+                <span>Waiting at Holding Yard B</span>
+              </div>
+              <span class="badge badge-warning">NEXT IN LINE</span>
+            </div>
+            <div class="queue-row waiting">
+              <div class="tok-bubble">A106</div>
+              <div class="tok-status">
+                <strong>Token A106</strong>
+                <span>Waiting at Holding Yard B</span>
+              </div>
+              <span class="badge badge-warning">WAITING</span>
+            </div>
+            <!-- USER TOKEN -->
+            <div class="queue-row user-row">
+              <div class="tok-bubble user-tok">A107</div>
+              <div class="tok-status">
+                <strong>Token A107 (YOU — Ramesh Kumar)</strong>
+                <span>Recommended Arrival Window: 10:15 AM</span>
+              </div>
+              <span class="badge badge-primary font-bold">YOUR TOKEN ⭐</span>
+            </div>
+            <div class="queue-row waiting">
+              <div class="tok-bubble">A108</div>
+              <div class="tok-status">
+                <strong>Token A108</strong>
+                <span>Booked Slot 10:30 AM</span>
+              </div>
+              <span class="badge badge-secondary">WAITING</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 6. PROCUREMENT TRACKING PAGE ================= -->
+    <section id="view-procurement" class="view-section">
+      <div class="container section-padding-sm max-w-4xl">
+        <div class="view-title-box">
+          <h2>Procurement Progress Tracker</h2>
+          <p>Track your crop verification, quality grading, and weighing in real time.</p>
+        </div>
+
+        <div class="card timeline-card">
+          <h3>Token #A107 Stage Timeline</h3>
+          
+          <div class="procurement-timeline mt-lg">
+            <div class="timeline-step done">
+              <div class="step-icon">✓</div>
+              <div class="step-body">
+                <h4>Slot Booked</h4>
+                <p>10 Sep 2026, 09:15 AM • Reserved online</p>
+              </div>
+            </div>
+            <div class="timeline-step done">
+              <div class="step-icon">✓</div>
+              <div class="step-body">
+                <h4>Farmer Checked In</h4>
+                <p>10:18 AM • QR Code scanned at Depot Gate 1</p>
+              </div>
+            </div>
+            <div class="timeline-step done">
+              <div class="step-icon">✓</div>
+              <div class="step-body">
+                <h4>Verification Complete</h4>
+                <p>10:22 AM • Aadhaar & Land Record matched</p>
+              </div>
+            </div>
+            <div class="timeline-step done">
+              <div class="step-icon">✓</div>
+              <div class="step-body">
+                <h4>Weighing Complete</h4>
+                <p>10:31 AM • Electronic Weighbridge #2: <strong>31.8 Quintals</strong></p>
+              </div>
+            </div>
+            <div class="timeline-step active" id="stageQuality">
+              <div class="step-icon pulse">●</div>
+              <div class="step-body">
+                <h4>Quality Check (In Progress)</h4>
+                <p>Moisture level test: 13.5% (Pass) • Grade A Paddy</p>
+              </div>
+            </div>
+            <div class="timeline-step pending" id="stageCompleted">
+              <div class="step-icon">○</div>
+              <div class="step-body">
+                <h4>Procurement Completed</h4>
+                <p>Final receipt issuance</p>
+              </div>
+            </div>
+            <div class="timeline-step pending" id="stagePayProc">
+              <div class="step-icon">○</div>
+              <div class="step-body">
+                <h4>Payment Processing</h4>
+                <p>Treasury DBT mandate creation</p>
+              </div>
+            </div>
+            <div class="timeline-step pending" id="stagePayDone">
+              <div class="step-icon">○</div>
+              <div class="step-body">
+                <h4>Payment Completed</h4>
+                <p>Direct bank transfer credit</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Procurement Receipt Card -->
+        <div class="card mt-lg">
+          <div class="card-header-flex">
+            <h3>Digital Procurement Receipt Summary</h3>
+            <button class="btn btn-outline btn-sm" onclick="downloadReceipt()">📥 Download Receipt PDF</button>
+          </div>
+          <div class="receipt-details-grid mt-md">
+            <div class="r-item">
+              <span class="r-label">Crop Name</span>
+              <span class="r-val">Paddy (Grade A)</span>
+            </div>
+            <div class="r-item">
+              <span class="r-label">Declared Quantity</span>
+              <span class="r-val" id="receiptDeclaredQty">32.0 Quintals</span>
+            </div>
+            <div class="r-item">
+              <span class="r-label">Actual Measured Weight</span>
+              <span class="r-val highlight-val" id="receiptActualWeight">31.8 Quintals</span>
+            </div>
+            <div class="r-item">
+              <span class="r-label">Quality Grade</span>
+              <span class="r-val"><span class="badge badge-success">Grade A (Premium)</span></span>
+            </div>
+            <div class="r-item">
+              <span class="r-label">Government MSP Rate</span>
+              <span class="r-val">₹2,300 / Quintal</span>
+            </div>
+            <div class="r-item">
+              <span class="r-label">Calculated Total Amount</span>
+              <span class="r-val text-primary font-bold">₹73,140</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 7. PAYMENT PAGE ================= -->
+    <section id="view-payments" class="view-section">
+      <div class="container section-padding-sm max-w-4xl">
+        <div class="view-title-box">
+          <h2>Payment & Direct Benefit Transfer (DBT) Status</h2>
+          <p>Monitor your MSP procurement payouts directly linked to your bank account.</p>
+        </div>
+
+        <div class="card payment-hero-card">
+          <div class="pay-amount-box">
+            <span class="pay-label">Total Current Procurement Amount</span>
+            <div class="pay-amount">₹73,140</div>
+            <span class="badge badge-warning" id="payStatusBadge">● Payment Processing</span>
+          </div>
+
+          <div class="pay-ids-row">
+            <div>Procurement ID: <strong>PRC10293</strong></div>
+            <div>Transaction ID: <strong>TXN82931980</strong></div>
+            <div>Bank Account: <strong>State Bank of India (****4921)</strong></div>
+          </div>
+
+          <div class="pay-receipt-actions">
+            <button class="btn btn-primary btn-sm" id="previewReceiptBtn" onclick="openReceiptModal('PRC10293', '10 Sep 2026', 'Paddy', '31.8 Q', '₹73,140', 'Processing', 'TXN82931980', 'State Bank of India (****4921)')">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              Preview Receipt
+            </button>
+            <button class="btn btn-outline btn-sm" onclick="downloadProcurementReceiptPDF('PRC10293', '10 Sep 2026', 'Paddy', '31.8 Q', '₹73,140', 'Processing', 'TXN82931980', 'State Bank of India (****4921)')">
+              📥 Download Receipt PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Payment Timeline -->
+        <div class="card mt-lg">
+          <h3>Payment Processing Timeline</h3>
+          <div class="payment-milestone-list mt-md">
+            <div class="pay-step done">
+              <div class="p-dot">✓</div>
+              <div class="p-info">
+                <strong>Procurement Completed</strong>
+                <span class="text-muted">10 Sep 2026, 10:45 AM</span>
+              </div>
+            </div>
+            <div class="pay-step done">
+              <div class="p-dot">✓</div>
+              <div class="p-info">
+                <strong>Payment Request Mandate Created</strong>
+                <span class="text-muted">Mandi Treasury Advice #TR8912</span>
+              </div>
+            </div>
+            <div class="pay-step active" id="payStepProcessing">
+              <div class="p-dot pulse">●</div>
+              <div class="p-info">
+                <strong>Payment Processing (DBT Gateway)</strong>
+                <span class="text-muted">Public Financial Management System (PFMS) Clearing</span>
+              </div>
+            </div>
+            <div class="pay-step pending" id="payStepDone">
+              <div class="p-dot">○</div>
+              <div class="p-info">
+                <strong>Payment Credited to Bank Account</strong>
+                <span class="text-muted">Estimated credit within 24-48 hours</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="alert alert-info mt-md">
+            ℹ️ <strong>System Note:</strong> Payment status is automatically updated by the PFMS treasury gateway. No manual intervention required.
+          </div>
+        </div>
+
+        <!-- Previous Payment History -->
+        <div class="card mt-lg">
+          <h3>Previous Procurement Payouts</h3>
+          <table class="data-table mt-md">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Procurement ID</th>
+                <th>Crop</th>
+                <th>Quantity</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Receipt</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>21 Aug 2026</td>
+                <td>PRC09812</td>
+                <td>Paddy</td>
+                <td>28.0 Q</td>
+                <td>₹64,400</td>
+                <td><span class="badge badge-success">Paid ✓</span></td>
+                <td><button class="btn btn-ghost btn-xs receipt-dl-btn" onclick="openReceiptModal('PRC09812','21 Aug 2026','Paddy','28.0 Q','₹64,400','Paid','TXN72819811','SBI (****4921)')">📄 Receipt</button></td>
+              </tr>
+              <tr>
+                <td>05 Aug 2026</td>
+                <td>PRC08124</td>
+                <td>Maize</td>
+                <td>15.0 Q</td>
+                <td>₹31,350</td>
+                <td><span class="badge badge-success">Paid ✓</span></td>
+                <td><button class="btn btn-ghost btn-xs receipt-dl-btn" onclick="openReceiptModal('PRC08124','05 Aug 2026','Maize','15.0 Q','₹31,350','Paid','TXN61720944','SBI (****4921)')">📄 Receipt</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 8. PROCUREMENT HISTORY PAGE ================= -->
+    <section id="view-history" class="view-section">
+      <div class="container section-padding-sm">
+        <div class="view-title-box">
+          <h2>Procurement History</h2>
+          <p>Search and filter all past crop procurement records.</p>
+        </div>
+
+        <div class="card">
+          <!-- Search & Filter Controls -->
+          <div class="filter-controls-row">
+            <div class="search-box">
+              <input type="text" id="historySearchInput" class="form-control" placeholder="🔍 Search by Centre, ID, or Token..." oninput="filterHistoryTable()">
+            </div>
+            <div class="filter-dropdowns">
+              <select id="historyCropFilter" class="form-control" onchange="filterHistoryTable()">
+                <option value="ALL">All Crops</option>
+                <option value="Paddy">Paddy</option>
+                <option value="Wheat">Wheat</option>
+                <option value="Maize">Maize</option>
+              </select>
+
+              <select id="historyStatusFilter" class="form-control" onchange="filterHistoryTable()">
+                <option value="ALL">All Statuses</option>
+                <option value="Completed">Completed</option>
+                <option value="Paid">Paid</option>
+                <option value="Processing">Processing</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- History Table -->
+          <div class="table-responsive mt-md">
+            <table class="data-table" id="historyTable">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Record ID</th>
+                  <th>Crop</th>
+                  <th>Centre Depot</th>
+                  <th>Quantity</th>
+                  <th>Amount</th>
+                  <th>Status</th>
+                  <th>Receipt</th>
+                </tr>
+              </thead>
+              <tbody id="historyTableBody">
+                <tr data-crop="Paddy" data-status="Processing">
+                  <td>10 Sep 2026</td>
+                  <td>PRC10293</td>
+                  <td>Paddy</td>
+                  <td>XYZ Procurement Centre</td>
+                  <td>31.8 Q</td>
+                  <td>₹73,140</td>
+                  <td><span class="badge badge-warning">Processing</span></td>
+                  <td><button class="btn btn-ghost btn-xs receipt-dl-btn" onclick="openReceiptModal('PRC10293','10 Sep 2026','Paddy','31.8 Q','₹73,140','Processing','TXN82931980','SBI (****4921)')">📄 Receipt</button></td>
+                </tr>
+                <tr data-crop="Paddy" data-status="Paid">
+                  <td>21 Aug 2026</td>
+                  <td>PRC09812</td>
+                  <td>Paddy</td>
+                  <td>XYZ Procurement Centre</td>
+                  <td>28.0 Q</td>
+                  <td>₹64,400</td>
+                  <td><span class="badge badge-success">Paid</span></td>
+                  <td><button class="btn btn-ghost btn-xs receipt-dl-btn" onclick="openReceiptModal('PRC09812','21 Aug 2026','Paddy','28.0 Q','₹64,400','Paid','TXN72819811','SBI (****4921)')">📄 Receipt</button></td>
+                </tr>
+                <tr data-crop="Maize" data-status="Paid">
+                  <td>05 Aug 2026</td>
+                  <td>PRC08124</td>
+                  <td>Maize</td>
+                  <td>ABC Procurement Centre</td>
+                  <td>15.0 Q</td>
+                  <td>₹31,350</td>
+                  <td><span class="badge badge-success">Paid</span></td>
+                  <td><button class="btn btn-ghost btn-xs receipt-dl-btn" onclick="openReceiptModal('PRC08124','05 Aug 2026','Maize','15.0 Q','₹31,350','Paid','TXN61720944','SBI (****4921)')">📄 Receipt</button></td>
+                </tr>
+                <tr data-crop="Wheat" data-status="Paid">
+                  <td>12 May 2026</td>
+                  <td>PRC05411</td>
+                  <td>Wheat</td>
+                  <td>Karnal Yard #3</td>
+                  <td>45.0 Q</td>
+                  <td>₹1,02,375</td>
+                  <td><span class="badge badge-success">Paid</span></td>
+                  <td><button class="btn btn-ghost btn-xs receipt-dl-btn" onclick="openReceiptModal('PRC05411','12 May 2026','Wheat','45.0 Q','Rs.1,02,375','Paid','TXN50614302','SBI (****4921)')">📄 Receipt</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 9. NOTIFICATIONS PAGE ================= -->
+    <section id="view-notifications" class="view-section">
+      <div class="container section-padding-sm max-w-3xl">
+        <div class="card-header-flex mb-md">
+          <div>
+            <h2>Notifications Center</h2>
+            <p class="text-muted">Real-time alerts regarding your bookings, queue position, and payouts.</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="markAllNotificationsRead()">Mark all as read</button>
+        </div>
+
+        <div class="card">
+          <div class="notif-filter-tabs">
+            <button class="tab-btn active" onclick="filterNotifs('ALL')">All</button>
+            <button class="tab-btn" onclick="filterNotifs('Booking')">Booking</button>
+            <button class="tab-btn" onclick="filterNotifs('Queue')">Queue</button>
+            <button class="tab-btn" onclick="filterNotifs('Procurement')">Procurement</button>
+            <button class="tab-btn" onclick="filterNotifs('Payment')">Payment</button>
+          </div>
+
+          <div class="notif-full-list" id="notifFullList">
+            <div class="notif-card unread" data-cat="Booking">
+              <div class="n-icon bg-green-light">📅</div>
+              <div class="n-body">
+                <div class="n-title">Booking Confirmed</div>
+                <div class="n-desc">Your procurement slot at XYZ Procurement Centre is confirmed for 10 September 2026 at 10:30 AM.</div>
+                <div class="n-meta">10 mins ago • Booking</div>
+              </div>
+            </div>
+            <div class="notif-card unread" data-cat="Queue">
+              <div class="n-icon bg-amber-light">🔔</div>
+              <div class="n-body">
+                <div class="n-title">Queue Alert</div>
+                <div class="n-desc">You are now 5 positions away from your turn. Please prepare to move your vehicle near Gate 1.</div>
+                <div class="n-meta">2 mins ago • Queue</div>
+              </div>
+            </div>
+            <div class="notif-card" data-cat="Procurement">
+              <div class="n-icon bg-blue-light">⚖️</div>
+              <div class="n-body">
+                <div class="n-title">Quality Verification Passed</div>
+                <div class="n-desc">Your produce has successfully completed quality verification (Moisture 13.5%, Grade A).</div>
+                <div class="n-meta">Yesterday • Procurement</div>
+              </div>
+            </div>
+            <div class="notif-card" data-cat="Payment">
+              <div class="n-icon bg-purple-light">💳</div>
+              <div class="n-body">
+                <div class="n-title">Payment Processing Initiated</div>
+                <div class="n-desc">Payment of ₹73,140 is currently being processed via PFMS Treasury Mandate.</div>
+                <div class="n-meta">2 days ago • Payment</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 10. PROCUREMENT CENTRE STAFF DASHBOARD ================= -->
+    <section id="view-staff" class="view-section">
+      <div class="container section-padding-sm">
+        <div class="staff-header-banner">
+          <div>
+            <span class="badge badge-info">🏢 CENTRE STAFF OPERATIONAL PORTAL</span>
+            <h2>XYZ Procurement Depot — Staff Counter #2</h2>
+            <p>Operated by: Officer V. Sharma | Duty Shift: Morning</p>
+          </div>
+          <button class="btn btn-secondary" onclick="switchView('dashboard')">← Switch to Farmer View</button>
+        </div>
+
+        <!-- Staff Metrics Overview -->
+        <div class="grid grid-4 gap-md mt-md">
+          <div class="metric-card bg-surface">
+            <span class="m-label">Currently Waiting</span>
+            <span class="m-val" id="staffWaitingCount">17</span>
+          </div>
+          <div class="metric-card bg-surface">
+            <span class="m-label">Today's Total Appointments</span>
+            <span class="m-val">120</span>
+          </div>
+          <div class="metric-card bg-surface">
+            <span class="m-label">Completed Today</span>
+            <span class="m-val" id="staffCompletedCount">82</span>
+          </div>
+          <div class="metric-card bg-surface">
+            <span class="m-label">Avg Processing Time</span>
+            <span class="m-val text-success">7.4 min</span>
+          </div>
+        </div>
+
+        <div class="staff-layout-grid mt-lg">
+          <!-- Main Staff Queue Controller -->
+          <div class="card staff-queue-box text-center">
+            <h3>Queue Manager Controls</h3>
+            
+            <div class="currently-serving-display">
+              <span class="c-label">CURRENTLY SERVING TOKEN</span>
+              <span class="c-code" id="staffServingCode">A102</span>
+            </div>
+
+            <div class="next-tokens-list">
+              NEXT UP IN QUEUE:
+              <span class="badge badge-warning" id="staffNext1">A103</span>
+              <span class="badge badge-secondary" id="staffNext2">A104</span>
+              <span class="badge badge-secondary" id="staffNext3">A105</span>
+              <span class="badge badge-primary" id="staffUserTok">A107 (Ramesh)</span>
+            </div>
+
+            <!-- CALL NEXT FARMER BUTTON -->
+            <button class="btn btn-success btn-call-next" onclick="staffCallNextFarmer()">
+              📢 CALL NEXT FARMER (Advance Queue)
+            </button>
+            <p class="text-muted font-xs mt-xs">Clicking advances serving token and live-updates farmer screens instantly!</p>
+          </div>
+
+          <!-- Active Farmer Processing Panel -->
+          <div class="card staff-processing-panel">
+            <h3>Active Farmer Inspection Panel</h3>
+
+            <div class="farmer-info-box">
+              <div class="f-row"><span>Farmer ID:</span> <strong>F10293</strong></div>
+              <div class="f-row"><span>Name:</span> <strong>Ramesh Kumar</strong></div>
+              <div class="f-row"><span>Active Token:</span> <strong class="text-primary font-mono">A107</strong></div>
+              <div class="f-row"><span>Declared Crop & Weight:</span> <strong id="staffDeclaredQty">Paddy (32 Quintals)</strong></div>
+            </div>
+
+            <div class="staff-actions-grid mt-md">
+              <button class="btn btn-outline" onclick="staffAction('verify')">1. Verify Farmer ID ✓</button>
+              <button class="btn btn-outline" onclick="staffAction('weigh')">2. Record Weighbridge (31.8 Q)</button>
+              <button class="btn btn-outline" onclick="staffAction('quality')">3. Quality Check (Grade A)</button>
+              <button class="btn btn-primary" onclick="staffAction('complete')">4. Complete & Issue Receipt ✓</button>
+            </div>
+            
+            <div class="action-feedback-box mt-sm" id="staffActionFeedback">
+              Ready to process active token.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 11. ADMIN DASHBOARD ================= -->
+    <section id="view-admin" class="view-section">
+      <div class="container section-padding-sm">
+        <div class="admin-header">
+          <div>
+            <span class="badge badge-warning">🏛️ GOVERNMENT ADMIN DASHBOARD</span>
+            <h2>District Agricultural Procurement Oversight — Karnal District</h2>
+            <p>Real-time analytics across all 48 regional procurement centres.</p>
+          </div>
+          <button class="btn btn-outline" onclick="switchView('dashboard')">Exit Admin Portal</button>
+        </div>
+
+        <!-- 7 KPI Dashboard Cards -->
+        <div class="grid grid-4 gap-md mt-md">
+          <div class="stat-card">
+            <span class="s-title">Registered Farmers</span>
+            <span class="s-num">12,482</span>
+          </div>
+          <div class="stat-card">
+            <span class="s-title">Active Depots</span>
+            <span class="s-num">48</span>
+          </div>
+          <div class="stat-card">
+            <span class="s-title">Today's Bookings</span>
+            <span class="s-num text-primary">1,284</span>
+          </div>
+          <div class="stat-card">
+            <span class="s-title">Currently Waiting</span>
+            <span class="s-num text-warning">237</span>
+          </div>
+        </div>
+
+        <div class="grid grid-3 gap-md mt-md">
+          <div class="stat-card">
+            <span class="s-title">Avg Waiting Time</span>
+            <span class="s-num text-success">34 min</span>
+          </div>
+          <div class="stat-card">
+            <span class="s-title">Completed Today</span>
+            <span class="s-num">842</span>
+          </div>
+          <div class="stat-card">
+            <span class="s-title">Pending DBT Payments</span>
+            <span class="s-num text-amber">126</span>
+          </div>
+        </div>
+
+        <!-- Analytics Charts Grid -->
+        <div class="grid grid-2 gap-lg mt-lg">
+          <div class="card">
+            <h3>Daily Procurement Volume (Quintals)</h3>
+            <div class="chart-container">
+              <canvas id="chartProcurementVolume" height="200"></canvas>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Waiting Time Distribution by Centre</h3>
+            <div class="chart-container">
+              <canvas id="chartWaitTimes" height="200"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Centre Overview Table -->
+        <div class="card mt-lg">
+          <h3>Procurement Centre Congestion Overview</h3>
+          <div class="table-responsive mt-md">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Centre Name</th>
+                  <th>Waiting Farmers</th>
+                  <th>Estimated Wait</th>
+                  <th>Capacity Utilized</th>
+                  <th>Congestion Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>XYZ Procurement Centre</td>
+                  <td>18</td>
+                  <td>28 min</td>
+                  <td>62%</td>
+                  <td><span class="badge badge-success">Normal</span></td>
+                </tr>
+                <tr>
+                  <td>ABC Procurement Depot</td>
+                  <td>43</td>
+                  <td>1h 25m</td>
+                  <td>87%</td>
+                  <td><span class="badge badge-danger">High Demand</span></td>
+                </tr>
+                <tr>
+                  <td>Karnal Grain Yard #3</td>
+                  <td>22</td>
+                  <td>35 min</td>
+                  <td>55%</td>
+                  <td><span class="badge badge-success">Normal</span></td>
+                </tr>
+                <tr>
+                  <td>Gharaunda Sub-Mandi</td>
+                  <td>31</td>
+                  <td>52 min</td>
+                  <td>79%</td>
+                  <td><span class="badge badge-warning">Moderate</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 12. PROCUREMENT CENTRE MAP ================= -->
+    <section id="view-map" class="view-section">
+      <div class="container section-padding-sm">
+        <div class="view-title-box">
+          <h2>Regional Procurement Centre Map</h2>
+          <p>Visual map showing live congestion levels and queue depths across district procurement depots.</p>
+        </div>
+
+        <div class="map-layout-grid">
+          <!-- Interactive Visual Map Box -->
+          <div class="card map-visual-box">
+            <div class="map-legend">
+              <span class="leg-item"><span class="dot green"></span> Low Queue (&lt;30m)</span>
+              <span class="leg-item"><span class="dot yellow"></span> Moderate Queue (30m–60m)</span>
+              <span class="leg-item"><span class="dot red"></span> High Congestion (&gt;60m)</span>
+            </div>
+
+            <!-- Visual Interactive SVG Map Canvas -->
+            <div class="district-map-canvas" id="districtMap">
+              <svg width="100%" height="400" viewBox="0 0 600 400" fill="none">
+                <!-- Map Background & Roads -->
+                <rect width="600" height="400" fill="#F1F5F9" rx="12"/>
+                <path d="M50 150 Q 250 80 550 220" stroke="#CBD5E1" stroke-width="8" stroke-dasharray="4 4"/>
+                <path d="M120 350 Q 300 200 480 50" stroke="#CBD5E1" stroke-width="6"/>
+
+                <!-- Centre Marker 1: XYZ (Green) -->
+                <g class="map-marker" onclick="inspectMapCentre('XYZ Procurement Centre', '18 farmers', '28 min', '62%', '3', 'Low')" transform="translate(180, 160)">
+                  <circle cx="0" cy="0" r="16" fill="#166534" fill-opacity="0.2"/>
+                  <circle cx="0" cy="0" r="10" fill="#166534"/>
+                  <text x="0" y="4" fill="#FFF" font-weight="bold" font-size="10" text-anchor="middle">XYZ</text>
+                  <text x="0" y="-14" fill="#0F766E" font-weight="bold" font-size="11" text-anchor="middle">XYZ Depot (28m)</text>
+                </g>
+
+                <!-- Centre Marker 2: ABC (Red) -->
+                <g class="map-marker" onclick="inspectMapCentre('ABC Procurement Depot', '43 farmers', '1h 25m', '87%', '2', 'High')" transform="translate(380, 110)">
+                  <circle cx="0" cy="0" r="16" fill="#DC2626" fill-opacity="0.2"/>
+                  <circle cx="0" cy="0" r="10" fill="#DC2626"/>
+                  <text x="0" y="4" fill="#FFF" font-weight="bold" font-size="10" text-anchor="middle">ABC</text>
+                  <text x="0" y="-14" fill="#DC2626" font-weight="bold" font-size="11" text-anchor="middle">ABC Depot (1h 25m)</text>
+                </g>
+
+                <!-- Centre Marker 3: Karnal Yard (Green) -->
+                <g class="map-marker" onclick="inspectMapCentre('Karnal Grain Yard #3', '22 farmers', '35 min', '55%', '4', 'Low')" transform="translate(320, 260)">
+                  <circle cx="0" cy="0" r="16" fill="#166534" fill-opacity="0.2"/>
+                  <circle cx="0" cy="0" r="10" fill="#166534"/>
+                  <text x="0" y="4" fill="#FFF" font-weight="bold" font-size="10" text-anchor="middle">K3</text>
+                  <text x="0" y="-14" fill="#0F766E" font-weight="bold" font-size="11" text-anchor="middle">Karnal Yard #3</text>
+                </g>
+
+                <!-- Centre Marker 4: Gharaunda (Yellow) -->
+                <g class="map-marker" onclick="inspectMapCentre('Gharaunda Sub-Mandi', '31 farmers', '52 min', '79%', '3', 'Moderate')" transform="translate(480, 310)">
+                  <circle cx="0" cy="0" r="16" fill="#D97706" fill-opacity="0.2"/>
+                  <circle cx="0" cy="0" r="10" fill="#D97706"/>
+                  <text x="0" y="4" fill="#FFF" font-weight="bold" font-size="10" text-anchor="middle">GHR</text>
+                  <text x="0" y="-14" fill="#D97706" font-weight="bold" font-size="11" text-anchor="middle">Gharaunda Depot</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+
+          <!-- Centre Detail Drawer -->
+          <div class="card map-detail-card" id="mapDetailBox">
+            <span class="badge badge-success" id="mapCentreBadge">Low Queue</span>
+            <h3 id="mapCentreTitle" class="mt-xs">XYZ Procurement Centre</h3>
+            
+            <div class="map-stats-list mt-md">
+              <div class="m-stat-row">
+                <span>Current Queue Depth:</span>
+                <strong id="mapCentreQueue">18 farmers</strong>
+              </div>
+              <div class="m-stat-row">
+                <span>Estimated Wait Time:</span>
+                <strong id="mapCentreWait" class="text-success">28 minutes</strong>
+              </div>
+              <div class="m-stat-row">
+                <span>Yard Capacity Used:</span>
+                <strong id="mapCentreCap">62%</strong>
+              </div>
+              <div class="m-stat-row">
+                <span>Active Weighing Counters:</span>
+                <strong id="mapCentreCounters">3 Active</strong>
+              </div>
+            </div>
+
+            <button class="btn btn-primary btn-block mt-lg" onclick="switchView('booking')">
+              Book Slot at this Centre ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 13. RESTRICTED ACCESS VIEW ================= -->
+    <section id="view-restricted" class="view-section">
+      <div class="container section-padding">
+        <div class="restricted-card">
+          <div class="restricted-header">
+            <div class="restricted-icon-wrap">
+              <span class="shield-lock-icon">🔒</span>
+            </div>
+            <span class="badge badge-danger mb-xs" id="restrictedNeededRole">🏛️ Profile Clearance Required</span>
+            <h2 class="restricted-title">Access Restricted</h2>
+            <p class="restricted-subtitle">
+              You are attempting to access <strong id="restrictedViewTitle">District Admin Portal</strong>. This portal area requires specific profile authorization.
+            </p>
+          </div>
+          
+          <div class="role-comparison-box">
+            <div class="role-comp-item">
+              <span class="comp-label">Current Active Profile:</span>
+              <span class="comp-value current" id="restrictedCurrentRole">🌾 Farmer Profile (Ramesh Kumar)</span>
+            </div>
+            <div class="role-comp-arrow">➔</div>
+            <div class="role-comp-item">
+              <span class="comp-label">Required Profile Access:</span>
+              <span class="comp-value required" id="restrictedNeededRoleSub">Authorized Role Clearance</span>
+            </div>
+          </div>
+
+          <div class="restricted-actions">
+            <button class="btn btn-primary btn-lg" id="restrictedActionBtn" onclick="toggleLoginModal(true)">
+              ⚡ Switch Profile & Access
+            </button>
+            <button class="btn btn-secondary btn-lg" onclick="switchView(state.currentUser.primaryView)">
+              🏠 Return to My Portal
+            </button>
+          </div>
+
+          <div class="restricted-footer-note">
+            KisanSetu Multi-Tier Security • Role-Based Access Control (RBAC) Active
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ================= 3-TIER LOGIN SYSTEM MODAL ================= -->
+  <div class="modal-backdrop" id="loginModal">
+    <div class="login-modal-box">
+      <button class="modal-close-btn" onclick="toggleLoginModal(false)" title="Close Modal">✕</button>
+      
+      <div class="login-header">
+        <div class="login-logo-emblem">
+          <svg width="40" height="40" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="36" height="36" rx="10" fill="url(#modal-logo-grad)"/>
+            <path d="M12 24C12 24 13.5 16 24 12C24 12 22.5 20 12 24Z" fill="#FEF08A"/>
+            <path d="M11 25C17 22 21 17 24 12" stroke="#166534" stroke-width="2.2" stroke-linecap="round"/>
+            <circle cx="24" cy="12" r="2.5" fill="#FFFFFF"/>
+            <defs>
+              <linearGradient id="modal-logo-grad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#0F766E"/>
+                <stop offset="1" stop-color="#166534"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <h3 class="login-title">KisanSetu Portal Authentication</h3>
+        <p class="login-subtitle">Sign in or register your account powered by Supabase Cloud</p>
+      </div>
+
+      <!-- Auth Mode Switcher: Sign In vs Register -->
+      <div class="auth-mode-toggle" style="display:flex; gap:10px; margin-bottom:15px; background:#f1f5f9; padding:4px; border-radius:8px;">
+        <button class="btn btn-sm auth-mode-btn active" id="authModeSignInBtn" style="flex:1; font-weight:600;" onclick="switchAuthMode('signin')">🔑 Sign In</button>
+        <button class="btn btn-sm auth-mode-btn" id="authModeSignUpBtn" style="flex:1; font-weight:600;" onclick="switchAuthMode('signup')">📝 Register Account</button>
+      </div>
+
+      <!-- Role Selection Tabs -->
+      <div class="login-tabs">
+        <button class="login-tab-btn active" data-role="farmer" onclick="switchLoginTab('farmer')">
+          <span class="tab-icon">🌾</span>
+          <span class="tab-text">1. Farmer</span>
+        </button>
+        <button class="login-tab-btn" data-role="procurement_centre" onclick="switchLoginTab('procurement_centre')">
+          <span class="tab-icon">🏢</span>
+          <span class="tab-text">2. Procurement Centre</span>
+        </button>
+        <button class="login-tab-btn" data-role="central_government" onclick="switchLoginTab('central_government')">
+          <span class="tab-icon">🏛️</span>
+          <span class="tab-text">3. Central Govt</span>
+        </button>
+      </div>
+
+      <!-- Tab 1: Farmer Form -->
+      <div class="login-tab-content active" data-role="farmer">
+        <div class="profile-info-banner farmer-banner">
+          <span class="banner-icon">🌾</span>
+          <div>
+            <strong>Tier 1: Farmer Profile Access</strong>
+            <p>Access slot booking, live token queue, payout tracking, and history.</p>
+          </div>
+        </div>
+        <!-- Sign In Form -->
+        <form onsubmit="handleSupabaseAuthSubmit(event, 'signin', 'farmer')" class="login-form auth-form-signin">
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="farmer@kisansetu.in" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg farmer-submit-btn">Sign In as Farmer</button>
+        </form>
+        <!-- Register Form -->
+        <form onsubmit="handleSupabaseAuthSubmit(event, 'signup', 'farmer')" class="login-form auth-form-signup" style="display:none;">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" name="full_name" class="form-control" placeholder="e.g. Ramesh Kumar" required>
+          </div>
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="farmer@kisansetu.in" required>
+          </div>
+          <div class="form-group">
+            <label>Create Password</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg farmer-submit-btn">Register New Farmer Account</button>
+        </form>
+
+        <div class="quick-demo-divider"><span>OR 1-CLICK QUICK ACCESS</span></div>
+        <button class="btn btn-quick-demo farmer-demo-btn" onclick="loginAsRole('farmer')">
+          ⚡ Quick Demo Login as Farmer (Ramesh Kumar)
+        </button>
+      </div>
+
+      <!-- Tab 2: Procurement Centre Form -->
+      <div class="login-tab-content" data-role="procurement_centre">
+        <div class="profile-info-banner staff-banner">
+          <span class="banner-icon">🏢</span>
+          <div>
+            <strong>Tier 2: Procurement Centre Staff Access</strong>
+            <p>Access gate check-in, moisture & quality testing, weighbridge log, and call live queue tokens.</p>
+          </div>
+        </div>
+        <!-- Sign In Form -->
+        <form onsubmit="handleSupabaseAuthSubmit(event, 'signin', 'procurement_centre')" class="login-form auth-form-signin">
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="centre@kisansetu.in" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg staff-submit-btn">Sign In as Procurement Centre Officer</button>
+        </form>
+        <!-- Register Form -->
+        <form onsubmit="handleSupabaseAuthSubmit(event, 'signup', 'procurement_centre')" class="login-form auth-form-signup" style="display:none;">
+          <div class="form-group">
+            <label>Officer Full Name</label>
+            <input type="text" name="full_name" class="form-control" placeholder="e.g. Inspector Suresh Verma" required>
+          </div>
+          <div class="form-group" style="background:#f0fdf4; padding:10px; border-radius:8px; border:1px solid #bbf7d0;">
+            <label style="color:#166534; font-weight:700;">🏢 Name of the Procurement Centre *</label>
+            <input type="text" name="centre_name" class="form-control" placeholder="e.g. XYZ Procurement Centre, Karnal" required style="border-color:#166534;">
+          </div>
+          <div class="form-group">
+            <label>Official Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="centre@kisansetu.in" required>
+          </div>
+          <div class="form-group">
+            <label>Create Password</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg staff-submit-btn">Register Procurement Centre Account</button>
+        </form>
+
+        <div class="quick-demo-divider"><span>OR 1-CLICK QUICK ACCESS</span></div>
+        <button class="btn btn-quick-demo staff-demo-btn" onclick="loginAsRole('procurement_centre')">
+          ⚡ Quick Demo Login as Centre Inspector (Suresh Verma)
+        </button>
+      </div>
+
+      <!-- Tab 3: Central Government Form -->
+      <div class="login-tab-content" data-role="central_government">
+        <div class="profile-info-banner admin-banner">
+          <span class="banner-icon">🏛️</span>
+          <div>
+            <strong>Tier 3: Central Government Access</strong>
+            <p>Access district/national analytics, MSP allocation targets, Mandi cluster management, and policy oversight.</p>
+          </div>
+        </div>
+        <!-- Sign In Form -->
+        <form onsubmit="handleSupabaseAuthSubmit(event, 'signin', 'central_government')" class="login-form auth-form-signin">
+          <div class="form-group">
+            <label>Govt Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="admin@krishi.gov.in" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg admin-submit-btn">Sign In as Central Govt Admin</button>
+        </form>
+        <!-- Register Form -->
+        <form onsubmit="handleSupabaseAuthSubmit(event, 'signup', 'central_government')" class="login-form auth-form-signup" style="display:none;">
+          <div class="form-group">
+            <label>Official Full Name</label>
+            <input type="text" name="full_name" class="form-control" placeholder="e.g. Dr. Ananya Sharma" required>
+          </div>
+          <div class="form-group">
+            <label>Official Govt Email Address</label>
+            <input type="email" name="email" class="form-control" placeholder="admin@krishi.gov.in" required>
+          </div>
+          <div class="form-group">
+            <label>Create Password</label>
+            <input type="password" name="password" class="form-control" placeholder="••••••••" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block btn-lg admin-submit-btn">Register Central Govt Admin Account</button>
+        </form>
+
+        <div class="quick-demo-divider"><span>OR 1-CLICK QUICK ACCESS</span></div>
+        <button class="btn btn-quick-demo admin-demo-btn" onclick="loginAsRole('central_government')">
+          ⚡ Quick Demo Login as Joint Secretary (Dr. Ananya Sharma)
+        </button>
+      </div>
+
+      <div class="modal-footer-note">
+        Protected by Supabase Authentication & Ministry of Agriculture Security Protocol
+      </div>
+    </div>
+  </div>
+
+  <!-- ========== RECEIPT PREVIEW MODAL ========== -->
+  <div class="modal-overlay" id="receiptModal" onclick="closeReceiptModal(event)">
+    <div class="modal-box receipt-modal-box" id="receiptModalBox">
+      <!-- Modal Header -->
+      <div class="receipt-modal-header">
+        <div class="receipt-modal-brand">
+          <div class="receipt-brand-logo">
+            <svg width="32" height="32" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="36" height="36" rx="10" fill="url(#rlogo-grad)"/>
+              <path d="M12 24C12 24 13.5 16 24 12C24 12 22.5 20 12 24Z" fill="#FEF08A"/>
+              <path d="M11 25C17 22 21 17 24 12" stroke="#166534" stroke-width="2.2" stroke-linecap="round"/>
+              <path d="M10 20C14 20 17 22 19 25" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="24" cy="12" r="2.5" fill="#FFFFFF"/>
+              <defs>
+                <linearGradient id="rlogo-grad" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+                  <stop stop-color="#0F766E"/>
+                  <stop offset="1" stop-color="#166534"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div>
+            <div class="receipt-brand-name">KisanSetu</div>
+            <div class="receipt-brand-sub">Ministry of Agriculture &amp; Farmers Welfare • Govt. of India</div>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeReceiptModalDirect()" title="Close">✕</button>
+      </div>
+
+      <!-- Receipt Title Banner -->
+      <div class="receipt-title-banner">
+        <span class="receipt-stamp">OFFICIAL</span>
+        <h2 class="receipt-modal-title">Procurement Payment Receipt</h2>
+        <p class="receipt-modal-subtitle">Digital Benefit Transfer — Minimum Support Price (MSP) Procurement</p>
+      </div>
+
+      <!-- Receipt Body -->
+      <div class="receipt-modal-body" id="receiptModalBody">
+        <!-- Populated dynamically by JS -->
+      </div>
+
+      <!-- Receipt Footer -->
+      <div class="receipt-modal-footer">
+        <div class="receipt-footer-note">
+          🔒 This is a digitally generated official receipt. Issued via PFMS (Public Financial Management System).
+        </div>
+        <div class="receipt-modal-actions">
+          <button class="btn btn-ghost btn-sm" onclick="closeReceiptModalDirect()">Close</button>
+          <button class="btn btn-primary" id="receiptDownloadBtn" onclick="triggerReceiptDownload()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF Receipt
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE BOTTOM NAVIGATION BAR -->
+  <nav class="mobile-bottom-nav">
+    <button class="mobile-nav-item active" data-view="landing" onclick="switchView('landing')">
+      <span class="m-icon">🏠</span>
+      <span class="m-label" data-i18n="mNavHome">Home</span>
+    </button>
+    <button class="mobile-nav-item" data-view="dashboard" onclick="switchView('dashboard')">
+      <span class="m-icon">📊</span>
+      <span class="m-label" data-i18n="mNavDash">Dash</span>
+    </button>
+    <button class="mobile-nav-item" data-view="booking" onclick="switchView('booking')">
+      <span class="m-icon">📅</span>
+      <span class="m-label" data-i18n="mNavBook">Book</span>
+    </button>
+    <button class="mobile-nav-item" data-view="queue" onclick="switchView('queue')">
+      <span class="m-icon">🎟️</span>
+      <span class="m-label" data-i18n="mNavQueue">Queue</span>
+    </button>
+    <button class="mobile-nav-item" data-view="payments" onclick="switchView('payments')">
+      <span class="m-icon">💰</span>
+      <span class="m-label" data-i18n="mNavPay">Payouts</span>
+    </button>
+  </nav>
+
+  <!-- QR Code generator library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- jsPDF library for PDF receipt generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <!-- Supabase JS Client SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
+</body>
+</html>
