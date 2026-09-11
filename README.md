@@ -1,4 +1,4 @@
-# 🌾 Kisan Setu
+# 🌾 KISAN SETU
 
 ### Digital Access to Agricultural Procurement Infrastructure
 
